@@ -307,8 +307,12 @@ public class FrmTurnos extends javax.swing.JDialog {
     }//GEN-LAST:event_btnAgregarActionPerformed
 
     private void btnBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBorrarActionPerformed
-        bd.borrarRegistro("turnos", "id_turno=" + this.grdTurnos.getValueAt(this.grdTurnos.getSelectedRow(), 0).toString());
-        this.actualizarGrilla();
+        try{
+            bd.borrarRegistro("turnos", "id_turno=" + this.grdTurnos.getValueAt(this.grdTurnos.getSelectedRow(), 0).toString());
+            this.actualizarGrilla();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, "dfgdsfgdsfgdfg");
+        }    
     }//GEN-LAST:event_btnBorrarActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
