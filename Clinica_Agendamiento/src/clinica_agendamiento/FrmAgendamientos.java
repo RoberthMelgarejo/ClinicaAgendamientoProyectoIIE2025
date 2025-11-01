@@ -4,17 +4,23 @@
  */
 package clinica_agendamiento;
 
+import java.awt.List;
 import java.text.SimpleDateFormat; //IMPORTACION DEL FORMATO SIMPLE
 import java.util.Calendar; //IMPORTACION DEL CALENDARIO
 import java.util.Date; //IMPORTACION DE LA FECHA (DATE)
 import java.util.Locale; //IMPORTACION DE LOCALE
-import javax.swing.JOptionPane; 
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.RowFilter;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
+import javax.swing.table.TableRowSorter;
 /**
  *
  * @author rober
@@ -41,84 +47,130 @@ public class FrmAgendamientos extends javax.swing.JDialog {
         this.setLocationRelativeTo(null);
 
         cargarDoctores();
+        cargarEspecialidades();
         actualizarGrillaHoy();
         actualizarGrillaAgendamientos();
         
     }
-    // ======== CARGA DE DOCTORES EN EL COMBO ========
-    private void cargarDoctores() {
-        cboDoctores.removeAllItems();
-        bd.cargarCombo(cboDoctores, "Ci_Doctor, CONCAT(Nombre,' ',Apellido) as Doctor", "doctores");
+    
+    private void cargarEspecialidades() {
+        cboEspecialidades.removeAllItems();
+        bd.cargarCombo(cboEspecialidades,
+                "Id_Especialidad, Nombre_Especialidad",
+                "especialidades");
     }
+    
+    private void filtrarPorEspecialidad() {
+        DatosCombo esp = (DatosCombo) cboEspecialidades.getSelectedItem();
+        if (esp == null) return;
 
-    // ======== ACTUALIZACIÓN DE GRILLA SEGÚN EL DÍA ========
-    private void actualizarGrilla(String dia) {
+        int idEsp = esp.getCodigo();
+
+        // ✅ Limpiar combo doctores
+        cboDoctores.removeAllItems();
+
+        // ✅ Cargar doctores solo de la especialidad seleccionada
+        bd.cargarCombo(cboDoctores,
+                "Ci_Doctor, CONCAT(Nombre,' ',Apellido)",
+                "doctores WHERE Id_Especialidad=" + idEsp);
+
+        // ✅ Actualizar la grilla mostrando SOLO turnos de esa especialidad
         try {
-            String sql = "SELECT DISTINCT d.Ci_Doctor, CONCAT(d.Nombre,' ',d.Apellido) AS Doctor, " +
-             "t.Dia, t.Hora_Inicio, t.Hora_Fin, d.Estado AS Estado " +
-             "FROM doctores d " +
-             "INNER JOIN turnos t ON d.Ci_Doctor = t.Ci_Doctor " +
-             "WHERE t.Dia = '" + dia + "'";
+            String sql = "SELECT d.Ci_Doctor, CONCAT(d.Nombre,' ',d.Apellido) AS Doctor, "
+                    + "e.Nombre_Especialidad AS Especialidad, t.Dia, "
+                    + "t.Hora_Inicio, t.Hora_Fin, d.Estado "
+                    + "FROM doctores d "
+                    + "INNER JOIN turnos t ON d.Ci_Doctor = t.Ci_Doctor "
+                    + "INNER JOIN especialidades e ON d.Id_Especialidad = e.Id_Especialidad "
+                    + "WHERE d.Id_Especialidad = " + idEsp;
 
             ResultSet rs = bd.consultarRegistros(sql);
 
             DefaultTableModel modelo = new DefaultTableModel();
             modelo.addColumn("CI Doctor");
             modelo.addColumn("Doctor");
+            modelo.addColumn("Especialidad");
             modelo.addColumn("Día");
             modelo.addColumn("Hora Inicio");
             modelo.addColumn("Hora Fin");
             modelo.addColumn("Estado");
 
-            // Usamos Set<String> y normalizamos el id a String (seguro ante INT o VARCHAR)
+            while (rs.next()) {
+                modelo.addRow(new Object[]{
+                        rs.getString("Ci_Doctor"),
+                        rs.getString("Doctor"),
+                        rs.getString("Especialidad"),
+                        rs.getString("Dia"),
+                        rs.getString("Hora_Inicio"),
+                        rs.getString("Hora_Fin"),
+                        rs.getString("Estado")
+                });
+            }
+
+            grdDatos.setModel(modelo);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al filtrar: " + e.getMessage());
+        }
+    }
+
+
+
+    // ======== CARGA DE DOCTORES EN EL COMBO ========
+    private void cargarDoctores() {  
+        cboDoctores.removeAllItems();
+        bd.cargarCombo(cboDoctores,
+            "Ci_Doctor, CONCAT(Nombre,' ',Apellido)",
+            "doctores");
+
+
+    }
+
+    // ======== ACTUALIZACIÓN DE GRILLA SEGÚN EL DÍA ========
+    private void actualizarGrilla(String dia) {
+        try {
+            // ⭐ Tomar la especialidad elegida en el combo
+            DatosCombo esp = (DatosCombo) cboEspecialidades.getSelectedItem();
+            String filtroEspecialidad = "";
+
+            if (esp != null) {
+                filtroEspecialidad = " AND d.Id_Especialidad = " + esp.getCodigo();
+            }
+
+            String sql = "SELECT DISTINCT d.Ci_Doctor, CONCAT(d.Nombre,' ',d.Apellido) AS Doctor, " +
+                         "e.Nombre_Especialidad AS Especialidad, t.Dia, t.Hora_Inicio, t.Hora_Fin, d.Estado AS Estado " +
+                         "FROM doctores d " +
+                         "INNER JOIN turnos t ON d.Ci_Doctor = t.Ci_Doctor " +
+                         "INNER JOIN especialidades e ON d.Id_Especialidad = e.Id_Especialidad " +
+                         "WHERE t.Dia = '" + dia + "'" +
+                         filtroEspecialidad; // ⭐ Se aplica filtro dinámico
+
+            ResultSet rs = bd.consultarRegistros(sql);
+
+            DefaultTableModel modelo = new DefaultTableModel();
+            modelo.addColumn("CI Doctor");
+            modelo.addColumn("Doctor");
+            modelo.addColumn("Especialidad");
+            modelo.addColumn("Día");
+            modelo.addColumn("Hora Inicio");
+            modelo.addColumn("Hora Fin");
+            modelo.addColumn("Estado");
+
             java.util.Set<String> doctoresAgregados = new java.util.HashSet<>();
 
             while (rs.next()) {
-                // Obtener el valor sin asumir tipo: puede venir como INT o VARCHAR
-                Object objCi = null;
-                try {
-                    objCi = rs.getObject("Ci_Doctor");
-                } catch (Exception ex) {
-                    // En caso de que el alias tenga otro nombre, intentamos con índice 1
-                    try { objCi = rs.getObject(1); } catch (Exception ex2) { objCi = null; }
-                }
-
-                if (objCi == null) {
-                    // Si por alguna razón no pudimos leer el CI, saltamos esa fila
-                    continue;
-                }
-
-                String ciDoctor = objCi.toString().trim();
-                if (ciDoctor.isEmpty()) {
-                    continue;
-                }
-
-                // Evita duplicados: si ya está, seguimos
-                if (doctoresAgregados.contains(ciDoctor)) {
-                    continue;
-                }
-
+                String ciDoctor = rs.getString("Ci_Doctor");
+                if (ciDoctor == null || doctoresAgregados.contains(ciDoctor)) continue;
                 doctoresAgregados.add(ciDoctor);
-
-                // Leemos el resto de columnas de forma segura
-                String nombreDoctor = "";
-                try { nombreDoctor = rs.getString("Doctor"); } catch (Exception ex) { nombreDoctor = ""; }
-                String diaRow = "";
-                try { diaRow = rs.getString("Dia"); } catch (Exception ex) { diaRow = ""; }
-                String horaInicio = "";
-                try { horaInicio = rs.getString("Hora_Inicio"); } catch (Exception ex) { horaInicio = ""; }
-                String horaFin = "";
-                try { horaFin = rs.getString("Hora_Fin"); } catch (Exception ex) { horaFin = ""; }
-                String estado = "";
-                try { estado = rs.getString("Estado"); } catch (Exception ex) { estado = ""; }
 
                 modelo.addRow(new Object[]{
                     ciDoctor,
-                    nombreDoctor,
-                    diaRow,
-                    horaInicio,
-                    horaFin,
-                    estado
+                    rs.getString("Doctor"),
+                    rs.getString("Especialidad"),
+                    rs.getString("Dia"),
+                    rs.getString("Hora_Inicio"),
+                    rs.getString("Hora_Fin"),
+                    rs.getString("Estado")
                 });
             }
 
@@ -128,6 +180,8 @@ public class FrmAgendamientos extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(null, "Error al cargar la grilla: " + e.getMessage());
         }
     }
+
+
 
     private void actualizarGrillaHoy() {
         SimpleDateFormat formatoDia = new SimpleDateFormat("EEEE", new Locale("es", "ES"));
@@ -140,22 +194,28 @@ public class FrmAgendamientos extends javax.swing.JDialog {
             String sql = "SELECT a.Id_Agendamiento, a.Fecha_Cita, a.Estado_Cita, " +
                          "a.Ci_Paciente, CONCAT(p.Nombre, ' ', p.Apellido) AS Paciente, " +
                          "a.Ci_Doctor, CONCAT(d.Nombre, ' ', d.Apellido) AS Doctor, " +
-                         "CONCAT(t.Hora_Inicio, ' - ', t.Hora_Fin) AS Turno " +
+                         "e.Nombre_Especialidad AS Especialidad, " +
+                         "t.Dia AS Dia, CONCAT(t.Hora_Inicio, ' - ', t.Hora_Fin) AS Turno " +
                          "FROM agendamientos a " +
                          "INNER JOIN pacientes p ON a.Ci_Paciente = p.Ci_Paciente " +
                          "INNER JOIN doctores d ON a.Ci_Doctor = d.Ci_Doctor " +
-                         "LEFT JOIN turnos t ON d.Ci_Doctor = t.Ci_Doctor";
+                         "INNER JOIN especialidades e ON d.Id_Especialidad = e.Id_Especialidad " +
+                         "INNER JOIN turnos t ON d.Ci_Doctor = t.Ci_Doctor " +
+                         "ORDER BY a.Fecha_Cita ASC, a.Id_Agendamiento ASC";
 
-            java.sql.ResultSet rs = bd.consultarRegistros(sql);
+            ResultSet rs = bd.consultarRegistros(sql);
+
             DefaultTableModel modelo = new DefaultTableModel();
-            modelo.addColumn("ID AGENDAMIENTO");
-            modelo.addColumn("FECHA");
-            modelo.addColumn("ESTADO");
-            modelo.addColumn("CI PACIENTE");
-            modelo.addColumn("NOMBRE PACIENTE");
-            modelo.addColumn("CI DOCTOR");
-            modelo.addColumn("NOMBRE DOCTOR");
-            modelo.addColumn("TURNO");
+            modelo.addColumn("ID");
+            modelo.addColumn("Fecha");
+            modelo.addColumn("Estado");
+            modelo.addColumn("CI Paciente");
+            modelo.addColumn("Paciente");
+            modelo.addColumn("CI Doctor");
+            modelo.addColumn("Doctor");
+            modelo.addColumn("Especialidad");
+            modelo.addColumn("Día");
+            modelo.addColumn("Turno");
 
             while (rs.next()) {
                 modelo.addRow(new Object[]{
@@ -166,13 +226,17 @@ public class FrmAgendamientos extends javax.swing.JDialog {
                     rs.getString("Paciente"),
                     rs.getString("Ci_Doctor"),
                     rs.getString("Doctor"),
+                    rs.getString("Especialidad"),
+                    rs.getString("Dia"),
                     rs.getString("Turno")
                 });
             }
+
             grdAgendamiento.setModel(modelo);
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error al cargar agendamientos: " + e.getMessage());
+            JOptionPane.showMessageDialog(null,
+                "Error al cargar agendamientos: " + e.getMessage());
         }
     }
     
@@ -207,10 +271,11 @@ public class FrmAgendamientos extends javax.swing.JDialog {
         optCancelado = new javax.swing.JRadioButton();
         optPendiente = new javax.swing.JRadioButton();
         jLabel1 = new javax.swing.JLabel();
+        cboFecha = new org.freixas.jcalendar.JCalendarCombo();
         txtIDAgendamiento = new javax.swing.JFormattedTextField();
         lblAgendamiento = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        cboFecha = new org.freixas.jcalendar.JCalendarCombo();
+        cboEspecialidades = new javax.swing.JComboBox<>();
+        lblEspecialidades = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
 
@@ -309,7 +374,7 @@ public class FrmAgendamientos extends javax.swing.JDialog {
 
         btnBusqueda.setBackground(new java.awt.Color(0, 51, 102));
         btnBusqueda.setForeground(new java.awt.Color(0, 51, 102));
-        btnBusqueda.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/BUSQUEDA-PACIENTE.png"))); // NOI18N
+        btnBusqueda.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/Imagen de WhatsApp 2025-10-28 a las 13.50.49_27ce4eb9.jpg"))); // NOI18N
         btnBusqueda.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnBusquedaActionPerformed(evt);
@@ -353,11 +418,11 @@ public class FrmAgendamientos extends javax.swing.JDialog {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(7, 7, 7)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnCancelarAgendamiento)
-                    .addComponent(btnGuardar)
-                    .addComponent(btnBusqueda)
-                    .addComponent(btnAgregar))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnGuardar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnAgregar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnBusqueda, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnCancelarAgendamiento, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(18, Short.MAX_VALUE))
         );
 
@@ -372,11 +437,6 @@ public class FrmAgendamientos extends javax.swing.JDialog {
         buttonGroup1.add(optCancelado);
         optCancelado.setForeground(new java.awt.Color(255, 255, 255));
         optCancelado.setText("Cancelado");
-        optCancelado.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                optCanceladoActionPerformed(evt);
-            }
-        });
 
         buttonGroup1.add(optPendiente);
         optPendiente.setForeground(new java.awt.Color(255, 255, 255));
@@ -390,6 +450,12 @@ public class FrmAgendamientos extends javax.swing.JDialog {
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("ESTADO DE LA CITA");
 
+        cboFecha.addDateListener(new org.freixas.jcalendar.DateListener() {
+            public void dateChanged(org.freixas.jcalendar.DateEvent evt) {
+                cboFechaDateChanged(evt);
+            }
+        });
+
         txtIDAgendamiento.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtIDAgendamientoActionPerformed(evt);
@@ -399,14 +465,14 @@ public class FrmAgendamientos extends javax.swing.JDialog {
         lblAgendamiento.setForeground(new java.awt.Color(255, 255, 255));
         lblAgendamiento.setText("ID AGENDAMIENTO");
 
-        jLabel6.setFont(new java.awt.Font("Felix Titling", 0, 12)); // NOI18N
-        jLabel6.setText("ESPECIALIDADES");
-
-        cboFecha.addDateListener(new org.freixas.jcalendar.DateListener() {
-            public void dateChanged(org.freixas.jcalendar.DateEvent evt) {
-                cboFechaDateChanged(evt);
+        cboEspecialidades.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cboEspecialidades.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cboEspecialidadesActionPerformed(evt);
             }
         });
+
+        lblEspecialidades.setText("Especialidades");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -415,22 +481,28 @@ public class FrmAgendamientos extends javax.swing.JDialog {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(txtIDAgendamiento, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel3Layout.createSequentialGroup()
-                            .addComponent(optPendiente)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(optCancelado)
-                            .addGap(10, 10, 10))
-                        .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(cboDoctores, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(lblAgendamiento, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtCIPaciente, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6)
-                    .addComponent(cboFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(24, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblEspecialidades)
+                            .addComponent(lblAgendamiento, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(cboEspecialidades, javax.swing.GroupLayout.Alignment.LEADING, 0, 214, Short.MAX_VALUE)
+                                .addComponent(txtIDAgendamiento, javax.swing.GroupLayout.Alignment.LEADING))
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(cboFecha, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
+                                .addComponent(cboDoctores, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(optPendiente)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(optCancelado))
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(txtCIPaciente, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 206, Short.MAX_VALUE)))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -440,10 +512,18 @@ public class FrmAgendamientos extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(txtIDAgendamiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cboFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(11, 11, 11)
-                .addComponent(jLabel1)
+                .addComponent(lblEspecialidades)
                 .addGap(18, 18, 18)
+                .addComponent(cboEspecialidades, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel3)
+                .addGap(18, 18, 18)
+                .addComponent(cboDoctores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(cboFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(optPendiente)
                     .addComponent(optCancelado))
@@ -451,13 +531,7 @@ public class FrmAgendamientos extends javax.swing.JDialog {
                 .addComponent(jLabel2)
                 .addGap(18, 18, 18)
                 .addComponent(txtCIPaciente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel3)
-                .addGap(18, 18, 18)
-                .addComponent(cboDoctores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel6)
-                .addGap(56, 56, 56))
+                .addGap(33, 33, 33))
         );
 
         jPanel4.setBackground(new java.awt.Color(0, 51, 102));
@@ -480,7 +554,7 @@ public class FrmAgendamientos extends javax.swing.JDialog {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(29, 29, 29)
                 .addComponent(jLabel5)
-                .addContainerGap(40, Short.MAX_VALUE))
+                .addContainerGap(33, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -492,7 +566,7 @@ public class FrmAgendamientos extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 290, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 923, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -519,14 +593,55 @@ public class FrmAgendamientos extends javax.swing.JDialog {
         Date fecha = cboFecha.getDate();
         if (fechaAtrasada(fecha)) {
             JOptionPane.showMessageDialog(null, "Fecha inválida. No puede ser pasada.");
-            return;
+            cboFecha.setDate(new Date());
+        }else{
+        filtrarPorFecha(fecha);
         }
-
-        SimpleDateFormat formatoDia = new SimpleDateFormat("EEEE", new Locale("es", "ES"));
-        String dia = formatoDia.format(fecha);
-        actualizarGrilla(dia);
     }//GEN-LAST:event_cboFechaDateChanged
 
+    private void filtrarPorFecha(Date fechaSeleccionada) {
+        DefaultTableModel modelo = (DefaultTableModel) grdAgendamiento.getModel();
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modelo);
+        grdAgendamiento.setRowSorter(sorter);
+
+        // 🔹 Convertir la fecha seleccionada al formato de la tabla
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String fechaFiltro = sdf.format(fechaSeleccionada);
+
+        // 🔹 Filtro por fecha
+        sorter.setRowFilter(RowFilter.regexFilter(fechaFiltro, 1));
+
+        // 🔹 Comparador de fechas para que DESCENDING funcione
+        sorter.setComparator(1, (String s1, String s2) -> {
+            try {
+                Date d1 = sdf.parse(s1);
+                Date d2 = sdf.parse(s2);
+                return d1.compareTo(d2);
+            } catch (Exception e) {
+                return 0;
+            }
+        });
+
+    // 🔹 Orden descendente por la columna de fecha
+    java.util.List<RowSorter.SortKey> sortKeys = new java.util.ArrayList<>();
+    sortKeys.add(new RowSorter.SortKey(1, SortOrder.DESCENDING));
+    sorter.setSortKeys(sortKeys);
+}
+
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     private void optPendienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optPendienteActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_optPendienteActionPerformed
@@ -576,8 +691,15 @@ public class FrmAgendamientos extends javax.swing.JDialog {
             return;
         }
         int ciDoctor = doctor.getCodigo();
+        DatosCombo esp = (DatosCombo) cboEspecialidades.getSelectedItem();
+        if (esp == null) {
+            JOptionPane.showMessageDialog(null, "Seleccione una especialidad.");
+            return;
+        }
+        int Id_Especialidad = esp.getCodigo();
 
-        //VALIDACIÓN 1: Verificar si el doctor está disponible
+
+        // ✅ VALIDACIÓN 1: Verificar si el doctor está disponible
         String sqlEstadoDoctor = "SELECT Estado FROM doctores WHERE Ci_Doctor = " + ciDoctor;
         ResultSet rsEstado = bd.consultarRegistros(sqlEstadoDoctor);
         try {
@@ -594,7 +716,7 @@ public class FrmAgendamientos extends javax.swing.JDialog {
             Logger.getLogger(FrmAgendamientos.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        //VALIDACIÓN 2: Verificar si ya existe un agendamiento mismo día + doctor + paciente
+        // ✅ VALIDACIÓN 2: Verificar si ya existe un agendamiento mismo día + doctor + paciente
         String sqlExiste = "SELECT * FROM agendamientos WHERE Ci_Doctor = " + ciDoctor +
                            " AND Ci_Paciente = " + ciPaciente +
                            " AND Fecha_Cita = '" + fecha + "'";
@@ -714,9 +836,9 @@ int fila = grdAgendamiento.getSelectedRow();
             }
     }//GEN-LAST:event_btnBusquedaActionPerformed
 
-    private void optCanceladoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optCanceladoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_optCanceladoActionPerformed
+    private void cboEspecialidadesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboEspecialidadesActionPerformed
+        filtrarPorEspecialidad();
+    }//GEN-LAST:event_cboEspecialidadesActionPerformed
     
     
     
@@ -770,6 +892,7 @@ int fila = grdAgendamiento.getSelectedRow();
     private javax.swing.JButton btnGuardar;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JComboBox<String> cboDoctores;
+    private javax.swing.JComboBox<String> cboEspecialidades;
     private org.freixas.jcalendar.JCalendarCombo cboFecha;
     private javax.swing.JTable grdAgendamiento;
     private javax.swing.JTable grdDatos;
@@ -778,7 +901,6 @@ int fila = grdAgendamiento.getSelectedRow();
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -786,6 +908,7 @@ int fila = grdAgendamiento.getSelectedRow();
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lblAgendamiento;
+    private javax.swing.JLabel lblEspecialidades;
     private javax.swing.JRadioButton optCancelado;
     private javax.swing.JRadioButton optPendiente;
     private javax.swing.JFormattedTextField txtBuscar;
