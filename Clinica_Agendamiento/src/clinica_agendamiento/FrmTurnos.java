@@ -296,6 +296,8 @@ public class FrmTurnos extends javax.swing.JDialog {
         this.habilitarCampos(true);
         this.habilitarBotones(false);
         this.txtIdTurno.setEnabled(false);
+        
+        //Sirver para autoincrementar el codigo
         ResultSet rs = bd.consultarRegistros("SELECT MAX(Id_Turno) +1 FROM Turnos");
         try{
             rs.next();
@@ -311,7 +313,7 @@ public class FrmTurnos extends javax.swing.JDialog {
             bd.borrarRegistro("turnos", "id_turno=" + this.grdTurnos.getValueAt(this.grdTurnos.getSelectedRow(), 0).toString());
             this.actualizarGrilla();
         }catch(Exception e){
-            JOptionPane.showMessageDialog(null, "dfgdsfgdsfgdfg");
+            JOptionPane.showMessageDialog(null, "PRIMERO DEBE CARGAR O SELECCIONAR EL REGISTRO ANTES DE ELIMINAR");
         }    
     }//GEN-LAST:event_btnBorrarActionPerformed
 
