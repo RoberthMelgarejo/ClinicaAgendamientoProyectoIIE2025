@@ -374,7 +374,7 @@ public class FrmAgendamientos extends javax.swing.JDialog {
 
         btnBusqueda.setBackground(new java.awt.Color(0, 51, 102));
         btnBusqueda.setForeground(new java.awt.Color(0, 51, 102));
-        btnBusqueda.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/Imagen de WhatsApp 2025-10-28 a las 13.50.49_27ce4eb9.jpg"))); // NOI18N
+        btnBusqueda.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/BUSQUEDA-PACIENTE.png"))); // NOI18N
         btnBusqueda.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnBusquedaActionPerformed(evt);
@@ -409,7 +409,7 @@ public class FrmAgendamientos extends javax.swing.JDialog {
                 .addGap(250, 250, 250)
                 .addComponent(btnCancelarAgendamiento)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnBusqueda)
+                .addComponent(btnBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(251, 251, 251)
                 .addComponent(btnGuardar)
                 .addGap(137, 137, 137))

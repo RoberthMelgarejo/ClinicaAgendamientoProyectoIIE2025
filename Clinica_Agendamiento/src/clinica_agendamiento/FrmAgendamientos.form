@@ -251,7 +251,7 @@
                   <EmptySpace min="-2" pref="250" max="-2" attributes="0"/>
                   <Component id="btnCancelarAgendamiento" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
-                  <Component id="btnBusqueda" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnBusqueda" min="-2" pref="55" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="251" max="-2" attributes="0"/>
                   <Component id="btnGuardar" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="137" max="-2" attributes="0"/>
@@ -299,7 +299,7 @@
               <Color blue="66" green="33" red="0" type="rgb"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/Iconos/Imagen de WhatsApp 2025-10-28 a las 13.50.49_27ce4eb9.jpg"/>
+              <Image iconType="3" name="/Iconos/BUSQUEDA-PACIENTE.png"/>
             </Property>
           </Properties>
           <Events>
