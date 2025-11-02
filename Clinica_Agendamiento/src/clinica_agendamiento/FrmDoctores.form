@@ -31,10 +31,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jPanel2" max="32767" attributes="0"/>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                  </Group>
+                  <Component id="jPanel1" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -72,7 +69,7 @@
                   <Component id="btnGuardar" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="149" max="-2" attributes="0"/>
                   <Component id="btnModificar" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace pref="372" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -179,12 +176,12 @@
                                       </Group>
                                       <Group type="102" alignment="0" attributes="0">
                                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                              <Component id="lblNombreDoctor" alignment="0" max="32767" attributes="0"/>
+                                              <Component id="lblNombreDoctor" alignment="0" pref="140" max="32767" attributes="0"/>
                                               <Component id="txtNombre" alignment="0" max="32767" attributes="0"/>
                                               <Component id="lblTelefono" alignment="0" min="-2" max="-2" attributes="0"/>
-                                              <Component id="txtTelefono" alignment="0" pref="140" max="32767" attributes="0"/>
-                                              <Component id="cboEspecialidad" alignment="0" pref="140" max="32767" attributes="0"/>
-                                              <Component id="lblEspecialidad" alignment="0" min="-2" pref="73" max="-2" attributes="0"/>
+                                              <Component id="txtTelefono" alignment="0" max="32767" attributes="0"/>
+                                              <Component id="cboEspecialidad" alignment="0" max="32767" attributes="0"/>
+                                              <Component id="lblEspecialidad" alignment="0" min="-2" pref="106" max="-2" attributes="0"/>
                                           </Group>
                                           <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -213,15 +210,15 @@
                                   <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="lblBuscar" min="-2" pref="70" max="-2" attributes="0"/>
-                                      <Component id="txtBuscar" min="-2" pref="699" max="-2" attributes="0"/>
                                       <Component id="jLabel1" alignment="0" min="-2" pref="250" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
                       </Group>
                       <Component id="jLabel3" alignment="0" min="-2" pref="140" max="-2" attributes="0"/>
+                      <Component id="txtBuscar" alignment="1" min="-2" pref="707" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace pref="37" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -496,8 +493,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane1" min="-2" pref="700" max="-2" attributes="0"/>
-                      <EmptySpace pref="7" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" pref="707" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -602,7 +598,7 @@
         <Component class="javax.swing.JLabel" name="jLabel3">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/iconos/personal.png"/>
+              <Image iconType="3" name="/Iconos/personal.png"/>
             </Property>
           </Properties>
         </Component>

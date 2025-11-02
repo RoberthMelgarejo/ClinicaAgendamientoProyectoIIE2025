@@ -105,7 +105,7 @@ public class FrmEspecialidades extends javax.swing.JDialog {
         jPanel1.setBackground(new java.awt.Color(0, 0, 102));
 
         btnAgregar.setBackground(new java.awt.Color(0, 0, 102));
-        btnAgregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/agregar.png"))); // NOI18N
+        btnAgregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/agregar.png"))); // NOI18N
         btnAgregar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAgregarActionPerformed(evt);
@@ -113,7 +113,7 @@ public class FrmEspecialidades extends javax.swing.JDialog {
         });
 
         btnBorrar.setBackground(new java.awt.Color(0, 0, 102));
-        btnBorrar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/borrar.png"))); // NOI18N
+        btnBorrar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/borrar.png"))); // NOI18N
         btnBorrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnBorrarActionPerformed(evt);
@@ -121,7 +121,7 @@ public class FrmEspecialidades extends javax.swing.JDialog {
         });
 
         btnModificar.setBackground(new java.awt.Color(0, 0, 102));
-        btnModificar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/componer.png"))); // NOI18N
+        btnModificar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/componer.png"))); // NOI18N
         btnModificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnModificarActionPerformed(evt);
@@ -129,7 +129,7 @@ public class FrmEspecialidades extends javax.swing.JDialog {
         });
 
         btnGuardar.setBackground(new java.awt.Color(0, 0, 102));
-        btnGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/disquete.png"))); // NOI18N
+        btnGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/disquete.png"))); // NOI18N
         btnGuardar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnGuardarActionPerformed(evt);
@@ -172,7 +172,7 @@ public class FrmEspecialidades extends javax.swing.JDialog {
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("PANEL DE ESPECIALIDADES");
 
-        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/DOCTORES.png"))); // NOI18N
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/DOCTORES.png"))); // NOI18N
         jLabel5.setText("jLabel5");
 
         javax.swing.GroupLayout pnlEspecialidadesLayout = new javax.swing.GroupLayout(pnlEspecialidades);

@@ -4,23 +4,17 @@
  */
 package clinica_agendamiento;
 
-import java.awt.List;
 import java.text.SimpleDateFormat; //IMPORTACION DEL FORMATO SIMPLE
 import java.util.Calendar; //IMPORTACION DEL CALENDARIO
 import java.util.Date; //IMPORTACION DE LA FECHA (DATE)
 import java.util.Locale; //IMPORTACION DE LOCALE
+import javax.swing.JOptionPane; 
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.RowFilter;
-import javax.swing.RowSorter;
-import javax.swing.SortOrder;
-import javax.swing.table.TableRowSorter;
 /**
  *
  * @author rober
@@ -66,10 +60,10 @@ public class FrmAgendamientos extends javax.swing.JDialog {
 
         int idEsp = esp.getCodigo();
 
-        // ✅ Limpiar combo doctores
+        // Limpiar combo doctores
         cboDoctores.removeAllItems();
 
-        // ✅ Cargar doctores solo de la especialidad seleccionada
+        // Cargar doctores solo de la especialidad seleccionada
         bd.cargarCombo(cboDoctores,
                 "Ci_Doctor, CONCAT(Nombre,' ',Apellido)",
                 "doctores WHERE Id_Especialidad=" + idEsp);
@@ -175,7 +169,7 @@ public class FrmAgendamientos extends javax.swing.JDialog {
             }
 
             grdDatos.setModel(modelo);
-
+            
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error al cargar la grilla: " + e.getMessage());
         }
@@ -233,6 +227,16 @@ public class FrmAgendamientos extends javax.swing.JDialog {
             }
 
             grdAgendamiento.setModel(modelo);
+            // === Ordenar la columna "Fecha" (columna 1) de forma descendente ===
+            javax.swing.table.TableRowSorter<javax.swing.table.TableModel> sorter =
+                new javax.swing.table.TableRowSorter<>(modelo);
+            grdAgendamiento.setRowSorter(sorter);
+
+            // Indica que se ordene por la columna 1 (Fecha) de forma descendente
+            java.util.List<javax.swing.RowSorter.SortKey> sortKeys = new java.util.ArrayList<>();
+            sortKeys.add(new javax.swing.RowSorter.SortKey(1, javax.swing.SortOrder.DESCENDING));
+            sorter.setSortKeys(sortKeys);
+            sorter.sort();
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null,
@@ -365,7 +369,7 @@ public class FrmAgendamientos extends javax.swing.JDialog {
 
         btnGuardar.setBackground(new java.awt.Color(0, 51, 102));
         btnGuardar.setForeground(new java.awt.Color(0, 51, 102));
-        btnGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/disquete.png"))); // NOI18N
+        btnGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/disquete.png"))); // NOI18N
         btnGuardar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnGuardarActionPerformed(evt);
@@ -392,7 +396,7 @@ public class FrmAgendamientos extends javax.swing.JDialog {
 
         btnAgregar.setBackground(new java.awt.Color(0, 51, 102));
         btnAgregar.setForeground(new java.awt.Color(0, 51, 102));
-        btnAgregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/agregar.png"))); // NOI18N
+        btnAgregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/agregar.png"))); // NOI18N
         btnAgregar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAgregarActionPerformed(evt);
@@ -409,8 +413,8 @@ public class FrmAgendamientos extends javax.swing.JDialog {
                 .addGap(250, 250, 250)
                 .addComponent(btnCancelarAgendamiento)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(251, 251, 251)
+                .addComponent(btnBusqueda)
+                .addGap(269, 269, 269)
                 .addComponent(btnGuardar)
                 .addGap(137, 137, 137))
         );
@@ -465,7 +469,6 @@ public class FrmAgendamientos extends javax.swing.JDialog {
         lblAgendamiento.setForeground(new java.awt.Color(255, 255, 255));
         lblAgendamiento.setText("ID AGENDAMIENTO");
 
-        cboEspecialidades.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cboEspecialidades.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cboEspecialidadesActionPerformed(evt);
@@ -513,9 +516,9 @@ public class FrmAgendamientos extends javax.swing.JDialog {
                 .addComponent(txtIDAgendamiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblEspecialidades)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cboEspecialidades, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(24, 24, 24)
                 .addComponent(jLabel3)
                 .addGap(18, 18, 18)
                 .addComponent(cboDoctores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -545,16 +548,16 @@ public class FrmAgendamientos extends javax.swing.JDialog {
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(331, 331, 331)
+                .addGap(362, 362, 362)
                 .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 486, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(371, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(29, 29, 29)
+                .addGap(17, 17, 17)
                 .addComponent(jLabel5)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(18, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -594,54 +597,10 @@ public class FrmAgendamientos extends javax.swing.JDialog {
         if (fechaAtrasada(fecha)) {
             JOptionPane.showMessageDialog(null, "Fecha inválida. No puede ser pasada.");
             cboFecha.setDate(new Date());
-        }else{
-        filtrarPorFecha(fecha);
         }
+
     }//GEN-LAST:event_cboFechaDateChanged
 
-    private void filtrarPorFecha(Date fechaSeleccionada) {
-        DefaultTableModel modelo = (DefaultTableModel) grdAgendamiento.getModel();
-        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modelo);
-        grdAgendamiento.setRowSorter(sorter);
-
-        // 🔹 Convertir la fecha seleccionada al formato de la tabla
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String fechaFiltro = sdf.format(fechaSeleccionada);
-
-        // 🔹 Filtro por fecha
-        sorter.setRowFilter(RowFilter.regexFilter(fechaFiltro, 1));
-
-        // 🔹 Comparador de fechas para que DESCENDING funcione
-        sorter.setComparator(1, (String s1, String s2) -> {
-            try {
-                Date d1 = sdf.parse(s1);
-                Date d2 = sdf.parse(s2);
-                return d1.compareTo(d2);
-            } catch (Exception e) {
-                return 0;
-            }
-        });
-
-    // 🔹 Orden descendente por la columna de fecha
-    java.util.List<RowSorter.SortKey> sortKeys = new java.util.ArrayList<>();
-    sortKeys.add(new RowSorter.SortKey(1, SortOrder.DESCENDING));
-    sorter.setSortKeys(sortKeys);
-}
-
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     private void optPendienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optPendienteActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_optPendienteActionPerformed
@@ -763,12 +722,14 @@ public class FrmAgendamientos extends javax.swing.JDialog {
     
     //AGREGAMOS LOS DATOS
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
+        
         this.txtCIPaciente.setEnabled(false);
         this.optPendiente.setEnabled(false);
         this.optCancelado.setEnabled(false);
         this.optPendiente.setSelected(true);
         opc = 'N';
         habilitarCampos(true);
+        this.txtIDAgendamiento.setEnabled(false);
         limpiarCampos();
         ResultSet rs = bd.consultarRegistros("SELECT MAX(Id_Agendamiento) +1 FROM agendamientos");
         try{
@@ -945,10 +906,3 @@ int fila = grdAgendamiento.getSelectedRow();
         cboDoctores.setSelectedIndex(-1);
     }  
 }
-
-
-
-
-
-
-

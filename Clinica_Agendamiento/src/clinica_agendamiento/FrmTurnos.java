@@ -52,7 +52,6 @@ public class FrmTurnos extends javax.swing.JDialog {
         jLabel3 = new javax.swing.JLabel();
         txtHoraFin = new javax.swing.JFormattedTextField();
         jLabel4 = new javax.swing.JLabel();
-        txtDia = new javax.swing.JFormattedTextField();
         jLabel5 = new javax.swing.JLabel();
         txtBuscarTurno = new javax.swing.JFormattedTextField();
         btnAgregar = new javax.swing.JButton();
@@ -64,6 +63,7 @@ public class FrmTurnos extends javax.swing.JDialog {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
+        cboDias = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -159,7 +159,13 @@ public class FrmTurnos extends javax.swing.JDialog {
 
         jLabel6.setFont(new java.awt.Font("Felix Titling", 0, 12)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setText("CI_Doctor");
+        jLabel6.setText("NOMBRE DEL DOCTOR");
+
+        cboDoctor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cboDoctorActionPerformed(evt);
+            }
+        });
 
         jLabel8.setBackground(new java.awt.Color(0, 51, 102));
         jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Iconos/giratorio.png"))); // NOI18N
@@ -167,6 +173,13 @@ public class FrmTurnos extends javax.swing.JDialog {
         jLabel9.setFont(new java.awt.Font("Felix Titling", 0, 24)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("PANEL DE TURNOS");
+
+        cboDias.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", " " }));
+        cboDias.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cboDiasActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -194,14 +207,15 @@ public class FrmTurnos extends javax.swing.JDialog {
                                 .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(txtHoraInicio, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
                                 .addComponent(txtHoraFin, javax.swing.GroupLayout.Alignment.LEADING))
-                            .addComponent(txtDia, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel7)))
+                                .addComponent(jLabel7))
+                            .addComponent(jLabel6)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(cboDias, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(21, 21, 21)
@@ -253,11 +267,11 @@ public class FrmTurnos extends javax.swing.JDialog {
                         .addComponent(jLabel3)
                         .addGap(18, 18, 18)
                         .addComponent(txtHoraFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addGap(27, 27, 27)
                         .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtDia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(33, 33, 33)
+                        .addGap(18, 18, 18)
+                        .addComponent(cboDias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(jLabel6))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 309, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(15, 15, 15)
@@ -296,8 +310,6 @@ public class FrmTurnos extends javax.swing.JDialog {
         this.habilitarCampos(true);
         this.habilitarBotones(false);
         this.txtIdTurno.setEnabled(false);
-        
-        //Sirver para autoincrementar el codigo
         ResultSet rs = bd.consultarRegistros("SELECT MAX(Id_Turno) +1 FROM Turnos");
         try{
             rs.next();
@@ -309,22 +321,19 @@ public class FrmTurnos extends javax.swing.JDialog {
     }//GEN-LAST:event_btnAgregarActionPerformed
 
     private void btnBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBorrarActionPerformed
-        try{
-            bd.borrarRegistro("turnos", "id_turno=" + this.grdTurnos.getValueAt(this.grdTurnos.getSelectedRow(), 0).toString());
-            this.actualizarGrilla();
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(null, "PRIMERO DEBE CARGAR O SELECCIONAR EL REGISTRO ANTES DE ELIMINAR");
-        }    
+        bd.borrarRegistro("turnos", "id_turno=" + this.grdTurnos.getValueAt(this.grdTurnos.getSelectedRow(), 0).toString());
+        this.actualizarGrilla();
     }//GEN-LAST:event_btnBorrarActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         DatosCombo cbo= (DatosCombo) this.cboDoctor.getSelectedItem();
         int codDoctor= cbo.getCodigo();
+        String diaSeleccionado = this.cboDias.getSelectedItem().toString();
         if(this.opc=='N'){  
-            bd.insertarRegistro("turnos", this.txtIdTurno.getText() + ", '" + this.txtHoraInicio.getText() + "', '" + this.txtHoraFin.getText() + "', '" + this.txtDia.getText() + "', " + codDoctor);
+            bd.insertarRegistro("turnos", this.txtIdTurno.getText() + ", '" + this.txtHoraInicio.getText() + "', '" + this.txtHoraFin.getText() + "', '" + diaSeleccionado+ "', " + codDoctor);
         }else{
             bd.actualizarRegistro("turnos", "hora_inicio='" + this.txtHoraInicio.getText() + "', hora_fin='" + this.txtHoraFin.getText() + "', ci_doctor=" +codDoctor + 
-                    ", dia='" + this.txtDia.getText() + "'", "id_turno=" + this.txtIdTurno.getText());
+                    ", dia='" + diaSeleccionado+ "'", "id_turno=" + this.txtIdTurno.getText());
         
         }
         this.opc='z';
@@ -338,7 +347,6 @@ public class FrmTurnos extends javax.swing.JDialog {
         this.txtIdTurno.setText(this.grdTurnos.getValueAt(this.grdTurnos.getSelectedRow(), 0).toString());
         this.txtHoraInicio.setText(this.grdTurnos.getValueAt(this.grdTurnos.getSelectedRow(), 1).toString());
         this.txtHoraFin.setText(this.grdTurnos.getValueAt(this.grdTurnos.getSelectedRow(), 2).toString());
-        this.txtDia.setText(this.grdTurnos.getValueAt(this.grdTurnos.getSelectedRow(), 3).toString());
   
         this.opc = 'M';
         this.habilitarBotones(false);
@@ -353,6 +361,14 @@ public class FrmTurnos extends javax.swing.JDialog {
     private void txtIdTurnoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdTurnoActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtIdTurnoActionPerformed
+
+    private void cboDoctorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboDoctorActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cboDoctorActionPerformed
+
+    private void cboDiasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboDiasActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cboDiasActionPerformed
 
     /**
      * @param args the command line arguments
@@ -401,6 +417,7 @@ public class FrmTurnos extends javax.swing.JDialog {
     private javax.swing.JButton btnBorrar;
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnModificar;
+    private javax.swing.JComboBox<String> cboDias;
     private javax.swing.JComboBox<String> cboDoctor;
     private javax.swing.JTable grdTurnos;
     private javax.swing.JLabel jLabel1;
@@ -415,7 +432,6 @@ public class FrmTurnos extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JFormattedTextField txtBuscarTurno;
-    private javax.swing.JFormattedTextField txtDia;
     private javax.swing.JFormattedTextField txtHoraFin;
     private javax.swing.JFormattedTextField txtHoraInicio;
     private javax.swing.JFormattedTextField txtIdTurno;
@@ -431,13 +447,13 @@ public class FrmTurnos extends javax.swing.JDialog {
         this.txtIdTurno.setEnabled(estado);
         this.txtHoraInicio.setEnabled(estado);
         this.txtHoraFin.setEnabled(estado);
-        this.txtDia.setEnabled(estado);  
+  
     }
     private void limpiarCampos(){
         this.txtIdTurno.setText(null);
         this.txtHoraInicio.setText(null);
         this.txtHoraFin.setText(null);
-        this.txtDia.setText(null); 
+
     }
 
     private void actualizarGrilla() {

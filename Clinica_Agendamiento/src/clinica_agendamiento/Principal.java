@@ -276,7 +276,7 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_itmBarrioActionPerformed
 
     private void itmAgendamientoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itmAgendamientoActionPerformed
-        FrmAgendamientos Agendamientos =new FrmAgendamientos(this,false);
+        FrmAgendamientos Agendamientos =new FrmAgendamientos(this,true);
         Agendamientos.setVisible(true);
     }//GEN-LAST:event_itmAgendamientoActionPerformed
 

@@ -28,8 +28,8 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <Component id="pnlPacientes" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="0" pref="18" max="32767" attributes="0"/>
+              <Component id="pnlPacientes" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -70,17 +70,13 @@
                       </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane1" alignment="0" max="32767" attributes="0"/>
-                      <Group type="102" attributes="0">
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="txtBuscar" min="-2" pref="761" max="-2" attributes="0"/>
-                              <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
-                              <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                      </Group>
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
+                      <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
+                      <Component id="jScrollPane1" alignment="0" pref="797" max="32767" attributes="0"/>
+                      <Component id="txtBuscar" alignment="0" max="32767" attributes="0"/>
                   </Group>
+                  <EmptySpace pref="28" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -94,7 +90,7 @@
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace pref="40" max="32767" attributes="0"/>
+                          <EmptySpace pref="34" max="32767" attributes="0"/>
                           <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="txtBuscar" min="-2" max="-2" attributes="0"/>
@@ -509,7 +505,7 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace pref="157" max="32767" attributes="0"/>
                       <Component id="btnAgregar" min="-2" pref="60" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="62" max="-2" attributes="0"/>
                       <Component id="btnGuardar" min="-2" pref="60" max="-2" attributes="0"/>
@@ -519,23 +515,17 @@
                       <Component id="btnBorrar" min="-2" pref="60" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
                       <Component id="btnModificar" min="-2" pref="59" max="-2" attributes="0"/>
-                      <EmptySpace pref="290" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" pref="139" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" attributes="0">
-                          <Component id="btnModificar" pref="60" max="32767" attributes="0"/>
-                          <Component id="btnBorrar" alignment="0" max="32767" attributes="0"/>
-                          <Component id="btnEnfermedades" alignment="0" max="32767" attributes="0"/>
-                          <Component id="btnGuardar" alignment="0" max="32767" attributes="0"/>
-                          <Component id="btnAgregar" alignment="0" max="32767" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
-                  </Group>
+                  <Component id="btnModificar" alignment="1" pref="60" max="32767" attributes="0"/>
+                  <Component id="btnBorrar" alignment="0" max="32767" attributes="0"/>
+                  <Component id="btnEnfermedades" alignment="0" max="32767" attributes="0"/>
+                  <Component id="btnGuardar" alignment="0" max="32767" attributes="0"/>
+                  <Component id="btnAgregar" alignment="0" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>
@@ -546,7 +536,7 @@
                   <Color blue="66" green="0" red="0" type="rgb"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/iconos/componer.png"/>
+                  <Image iconType="3" name="/Iconos/componer.png"/>
                 </Property>
               </Properties>
               <Events>
@@ -559,7 +549,7 @@
                   <Color blue="66" green="0" red="0" type="rgb"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/iconos/borrar.png"/>
+                  <Image iconType="3" name="/Iconos/borrar.png"/>
                 </Property>
               </Properties>
               <Events>
@@ -572,7 +562,7 @@
                   <Color blue="66" green="0" red="0" type="rgb"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/iconos/enfermedad.png"/>
+                  <Image iconType="3" name="/Iconos/enfermedad.png"/>
                 </Property>
               </Properties>
               <Events>
@@ -585,7 +575,7 @@
                   <Color blue="66" green="0" red="0" type="rgb"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/iconos/agregar.png"/>
+                  <Image iconType="3" name="/Iconos/agregar.png"/>
                 </Property>
               </Properties>
               <Events>
@@ -598,7 +588,7 @@
                   <Color blue="66" green="0" red="0" type="rgb"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/iconos/disquete.png"/>
+                  <Image iconType="3" name="/Iconos/disquete.png"/>
                 </Property>
               </Properties>
               <Events>
@@ -610,9 +600,8 @@
         <Component class="javax.swing.JLabel" name="jLabel12">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/iconos/paciente.png"/>
+              <Image iconType="3" name="/Iconos/paciente.png"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="jLabel12"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel13">
