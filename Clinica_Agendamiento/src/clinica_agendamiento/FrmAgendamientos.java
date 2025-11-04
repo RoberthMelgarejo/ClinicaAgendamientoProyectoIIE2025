@@ -68,7 +68,7 @@ public class FrmAgendamientos extends javax.swing.JDialog {
                 "Ci_Doctor, CONCAT(Nombre,' ',Apellido)",
                 "doctores WHERE Id_Especialidad=" + idEsp);
 
-        // ✅ Actualizar la grilla mostrando SOLO turnos de esa especialidad
+        // Actualizar la grilla mostrando SOLO turnos de esa especialidad
         try {
             String sql = "SELECT d.Ci_Doctor, CONCAT(d.Nombre,' ',d.Apellido) AS Doctor, "
                     + "e.Nombre_Especialidad AS Especialidad, t.Dia, "
@@ -658,7 +658,7 @@ public class FrmAgendamientos extends javax.swing.JDialog {
         int Id_Especialidad = esp.getCodigo();
 
 
-        // ✅ VALIDACIÓN 1: Verificar si el doctor está disponible
+        //Verificar si el doctor está disponible
         String sqlEstadoDoctor = "SELECT Estado FROM doctores WHERE Ci_Doctor = " + ciDoctor;
         ResultSet rsEstado = bd.consultarRegistros(sqlEstadoDoctor);
         try {
@@ -675,7 +675,7 @@ public class FrmAgendamientos extends javax.swing.JDialog {
             Logger.getLogger(FrmAgendamientos.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        // ✅ VALIDACIÓN 2: Verificar si ya existe un agendamiento mismo día + doctor + paciente
+        //Verificar si ya existe un agendamiento mismo día + doctor + paciente
         String sqlExiste = "SELECT * FROM agendamientos WHERE Ci_Doctor = " + ciDoctor +
                            " AND Ci_Paciente = " + ciPaciente +
                            " AND Fecha_Cita = '" + fecha + "'";
